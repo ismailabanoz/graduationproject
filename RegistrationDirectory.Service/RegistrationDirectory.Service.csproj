@@ -11,4 +11,8 @@
     <Folder Include="Concrete\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RegistrationDirectory.DataAccess\RegistrationDirectory.DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>
