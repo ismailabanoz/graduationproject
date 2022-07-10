@@ -13,13 +13,17 @@ namespace RegistrationDirectory.DataAccess.Concrete
         where T : class
     {
         private readonly DbSet<T> _dbSet;
+        private readonly AppDbContext _appDbContext;
+
         public GenericRepository(AppDbContext appDbContext)
         {
-            _dbSet = appDbContext.Set<T>();
+            _appDbContext = appDbContext;
         }
+
         public void Add(T entity)
         {
-            _dbSet.Add(entity);
+            _appDbContext.Entry(entity).State = EntityState.Added;
+            _appDbContext.SaveChanges();
         }
 
         public void Delete(int id)

@@ -8,6 +8,6 @@ namespace RegistrationDirectory.DataAccess.Absract
 {
     public interface IUnitOfWork
     {
-        int Commit();
+        void Commit();
     }
 }

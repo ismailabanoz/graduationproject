@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RegistrationDirectory.DataAccess.Models;
 using RegistrationDirectory.Service.Absract;
 
 namespace RegistrationDirectory.API.Controllers
@@ -20,6 +21,12 @@ namespace RegistrationDirectory.API.Controllers
         {
             var customers = _customerService.GetAll();
             return Ok(customers);
+        }
+        [HttpPost]
+        public IActionResult Add(Customer customer)
+        {
+            _customerService.Create(customer);
+            return Ok(customer);
         }
     }
 }

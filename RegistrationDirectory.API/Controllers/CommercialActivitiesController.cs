@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RegistrationDirectory.DataAccess.Models;
 using RegistrationDirectory.Service.Absract;
 
 namespace RegistrationDirectory.API.Controllers
@@ -19,6 +20,12 @@ namespace RegistrationDirectory.API.Controllers
         {
             var commercialActivities = _commercialActivityService.GetAll();
             return Ok(commercialActivities);
+        }
+        [HttpPost]
+        public IActionResult Add(CommercialActivity commercialActivity)
+        {
+            _commercialActivityService.Create(commercialActivity);
+            return Ok(commercialActivity);
         }
     }
 }

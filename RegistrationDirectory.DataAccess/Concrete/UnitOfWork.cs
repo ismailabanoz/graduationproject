@@ -15,9 +15,9 @@ namespace RegistrationDirectory.DataAccess.Concrete
         {
             _appDbContext = appDbContext;
         }
-        public int Commit()
+        public void Commit()
         {
-            return _appDbContext.SaveChanges();
+            _appDbContext.SaveChanges();
         }
     }
 }

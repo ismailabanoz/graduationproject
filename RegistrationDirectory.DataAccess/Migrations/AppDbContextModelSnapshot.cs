@@ -221,6 +221,12 @@ namespace RegistrationDirectory.DataAccess.Migrations
             modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.CommercialActivity", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Date")
@@ -324,22 +330,6 @@ namespace RegistrationDirectory.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.CommercialActivity", b =>
-                {
-                    b.HasOne("RegistrationDirectory.DataAccess.Models.Customer", "Customer")
-                        .WithMany("CommercialActivity")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.Customer", b =>
-                {
-                    b.Navigation("CommercialActivity");
                 });
 #pragma warning restore 612, 618
         }

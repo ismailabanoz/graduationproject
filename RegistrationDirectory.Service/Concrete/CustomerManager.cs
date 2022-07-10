@@ -23,13 +23,13 @@ namespace RegistrationDirectory.Service.Concrete
 
         public void Create(Customer customer)
         {
-            _context.Add(customer);
+            _context.Customers.Add(customer);
             _unitOfWork.Commit();
         }
 
         public void Delete(int customerId)
         {
-            _context.Remove(GetById(customerId));
+            _context.Customers.Remove(GetById(customerId));
             _unitOfWork.Commit();
         }
 
@@ -45,7 +45,7 @@ namespace RegistrationDirectory.Service.Concrete
 
         public void Update(Customer customer)
         {
-            _context.Update(customer);
+            _context.Customers.Update(customer);
             _unitOfWork.Commit();
         }
     }
