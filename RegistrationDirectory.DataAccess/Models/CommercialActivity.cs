@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RegistrationDirectory.DataAccess.Concrete
+namespace RegistrationDirectory.DataAccess.Models
 {
-    public class CommercialActivity :IEntity
+    public class CommercialActivity : IEntity
     {
         [Key]
         [ForeignKey("Customer")]

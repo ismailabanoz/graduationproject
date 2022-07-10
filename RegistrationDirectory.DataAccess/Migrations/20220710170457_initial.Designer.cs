@@ -12,8 +12,8 @@ using RegistrationDirectory.DataAccess.Concrete;
 namespace RegistrationDirectory.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220709193947_createdIdentityDbContext")]
-    partial class createdIdentityDbContext
+    [Migration("20220710170457_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -130,7 +130,7 @@ namespace RegistrationDirectory.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("RegistrationDirectory.DataAccess.Concrete.AppRole", b =>
+            modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.AppRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -156,7 +156,7 @@ namespace RegistrationDirectory.DataAccess.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("RegistrationDirectory.DataAccess.Concrete.AppUser", b =>
+            modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -220,7 +220,27 @@ namespace RegistrationDirectory.DataAccess.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("RegistrationDirectory.DataAccess.Concrete.Customer", b =>
+            modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.CommercialActivity", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Service")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CommercialActivities");
+                });
+
+            modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -244,8 +264,9 @@ namespace RegistrationDirectory.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<byte>("Photograph")
-                        .HasColumnType("smallint");
+                    b.Property<byte[]>("Photograph")
+                        .IsRequired()
+                        .HasColumnType("bytea");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -258,7 +279,7 @@ namespace RegistrationDirectory.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("RegistrationDirectory.DataAccess.Concrete.AppRole", null)
+                    b.HasOne("RegistrationDirectory.DataAccess.Models.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -267,7 +288,7 @@ namespace RegistrationDirectory.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("RegistrationDirectory.DataAccess.Concrete.AppUser", null)
+                    b.HasOne("RegistrationDirectory.DataAccess.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -276,7 +297,7 @@ namespace RegistrationDirectory.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("RegistrationDirectory.DataAccess.Concrete.AppUser", null)
+                    b.HasOne("RegistrationDirectory.DataAccess.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -285,13 +306,13 @@ namespace RegistrationDirectory.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("RegistrationDirectory.DataAccess.Concrete.AppRole", null)
+                    b.HasOne("RegistrationDirectory.DataAccess.Models.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RegistrationDirectory.DataAccess.Concrete.AppUser", null)
+                    b.HasOne("RegistrationDirectory.DataAccess.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -300,11 +321,27 @@ namespace RegistrationDirectory.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("RegistrationDirectory.DataAccess.Concrete.AppUser", null)
+                    b.HasOne("RegistrationDirectory.DataAccess.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.CommercialActivity", b =>
+                {
+                    b.HasOne("RegistrationDirectory.DataAccess.Models.Customer", "Customer")
+                        .WithMany("CommercialActivity")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.Customer", b =>
+                {
+                    b.Navigation("CommercialActivity");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RegistrationDirectory.DataAccess.Concrete
+namespace RegistrationDirectory.DataAccess.Models
 {
-    public class AppUser:IdentityUser,IEntity
+    public class AppRole : IdentityRole, IEntity
     {
     }
 }

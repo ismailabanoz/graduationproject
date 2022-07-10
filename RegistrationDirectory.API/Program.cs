@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RegistrationDirectory.DataAccess.Absract;
 using RegistrationDirectory.DataAccess.Concrete;
+using RegistrationDirectory.DataAccess.Models;
+using RegistrationDirectory.Service.Absract;
+using RegistrationDirectory.Service.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +15,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<ICustomerService, CustomerManager>();
+builder.Services.AddScoped<ICommercialActivityService, CommercialActivityManager>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped(typeof(GenericRepository<>));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -18,7 +26,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
-
 
 var app = builder.Build();
 
