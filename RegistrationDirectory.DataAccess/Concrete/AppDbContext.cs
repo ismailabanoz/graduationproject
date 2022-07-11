@@ -16,7 +16,7 @@ namespace RegistrationDirectory.DataAccess.Concrete
         }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<CommercialActivity> CommercialActivities { get; set; }
-        
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 
     }

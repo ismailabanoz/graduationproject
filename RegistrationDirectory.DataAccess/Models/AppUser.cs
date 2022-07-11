@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RegistrationDirectory.DataAccess.Models
 {
-    public class AppUser : IdentityUser, IEntity
+    public class AppUser : IdentityUser
     {
     }
 }
