@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using RegistrationDirectory.DataAccess.Absract;
 using RegistrationDirectory.DataAccess.Concrete;
 using RegistrationDirectory.DataAccess.DTOs;
 using RegistrationDirectory.DataAccess.Models;
@@ -17,68 +18,53 @@ namespace RegistrationDirectory.Service.Concrete
 {
     public class TokenService : ITokenService
     {
-        private readonly CustomTokenOption _tokenOption;
+        private readonly CustomTokenOption _customTokenOption;
          private readonly AppDbContext _appDbContext;
-         private readonly UserManager<AppUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
 
-         public TokenService(IOptions<CustomTokenOption> tokenOption, AppDbContext appDbContext, UserManager<AppUser> userManager)
-         {
-             _tokenOption = tokenOption.Value;
-             _appDbContext = appDbContext;
-             _userManager = userManager;
-         }
+        public TokenService(AppDbContext appDbContext, UserManager<AppUser> userManager, IUnitOfWork unitOfWork, IOptions<CustomTokenOption> customTokenOption)
+        {
+            _appDbContext = appDbContext;
+            _userManager = userManager;
+            _unitOfWork = unitOfWork;
+            _customTokenOption = customTokenOption.Value;
+        }
 
-         public TokenDto CreateToken(string username)
+        public async Task<string> CreateToken(string userName,string password)
          {
-            /*var user = _userManager.FindByNameAsync(appUser.UserName);
+            var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                return BadRequest("user not found");
-            }*/
-
-
-
-            var user = _userManager.Users.FirstOrDefault(x => x.UserName == username);
-
-          var accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOption.AccessTokenExpiration);
-          var refreshTokenExpiration = DateTime.Now.AddMinutes(_tokenOption.RefreshTokenExpiration);
-          var securityKey =Encoding.ASCII.GetBytes(_tokenOption.SecurityKey);
-
-          SigningCredentials signingCredentials = new SigningCredentials(new SymmetricSecurityKey(securityKey), SecurityAlgorithms.HmacSha256Signature);
-
-          JwtSecurityToken jwtSecurityToken = new JwtSecurityToken(
-              issuer: _tokenOption.Issuer,
-              expires: accessTokenExpiration,
-               notBefore: DateTime.Now,
-               claims: GetClaims(user, _tokenOption.Audience),
-               signingCredentials: signingCredentials);
-
-          var handler = new JwtSecurityTokenHandler();
-
-          var token = handler.WriteToken(jwtSecurityToken);
-          RefreshToken(user);
-          var tokenDto = new TokenDto
-          {
-              AccessToken = token,
-              AccessTokenExpiration = accessTokenExpiration,
-              RefreshTokenExpiration = refreshTokenExpiration
-          };
-
-          return tokenDto;
-      }
-
-      private IEnumerable<Claim> GetClaims(AppUser appUser, List<String> audiences)
-      {
-          var userList = new List<Claim> {
-          new Claim(ClaimTypes.NameIdentifier,appUser.Id),
-          new Claim(ClaimTypes.Name,appUser.UserName),
-          new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
-          };
-
-          userList.AddRange(audiences.Select(x => new Claim(JwtRegisteredClaimNames.Aud, x)));
-
-          return userList;
-      }
+                return "incorrect username or password";
+            }
+            if (!await _userManager.CheckPasswordAsync(user, password))
+            {
+                return "incorrect username or password";
+            }
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var accessTokenExpiration = DateTime.Now.AddMinutes(_customTokenOption.AccessTokenExpiration);
+            var refreshTokenExpiration = DateTime.Now.AddMinutes(_customTokenOption.RefreshTokenExpiration);
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_customTokenOption.SecurityKey));
+            SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+            var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.Name, user.UserName));
+            userRoles.ToList().ForEach(x =>
+            {
+                claims.Add(new Claim(ClaimTypes.Role, x));
+            });
+            JwtSecurityToken jwtSecurityToken = new JwtSecurityToken(
+                issuer: _customTokenOption.Issuer,
+                expires: accessTokenExpiration,
+                notBefore: DateTime.UtcNow,
+                claims: claims,
+                signingCredentials: signingCredentials);
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.WriteToken(jwtSecurityToken);
+            RefreshToken(user);
+            return token;
+        }
+      
       private void RefreshToken(AppUser appUser)
       {
           var refreshToken = CreateRefreshToken();
@@ -90,18 +76,14 @@ namespace RegistrationDirectory.Service.Concrete
           else
           {
               checkRefreshToken.Guid = refreshToken;
-              checkRefreshToken.ExpDate = DateTime.Now.AddDays(60);
+              checkRefreshToken.ExpDate = DateTime.UtcNow.AddDays(60);
           }
-          _appDbContext.SaveChanges();
+            _unitOfWork.Commit();
       }
       private string CreateRefreshToken()
       {
           return Guid.NewGuid().ToString();
       }
-        
-        public TokenDto CreateToken(AppUser appUser)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

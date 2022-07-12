@@ -29,26 +29,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("SqlCon"));
 });
 
-/*builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts =>
-{
-    var tokenOptions = builder.Configuration.GetSection("TokenOption").Get<CustomTokenOption>();
-    opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
-    {
-        ValidIssuer = tokenOptions.Issuer,
-        ValidAudience = tokenOptions.Audience[0],
-        IssuerSigningKey = SignService.GetSymmetricSecurityKey(tokenOptions.SecurityKey),
 
-        ValidateIssuerSigningKey = true,
-        ValidateAudience = true,
-        ValidateIssuer = true,
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
-    };
-});*/
+
+builder.Services.Configure<CustomTokenOption>(builder.Configuration.GetSection("TokenOption"));
+
+
+
+
 
 
 

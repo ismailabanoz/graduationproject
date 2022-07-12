@@ -11,42 +11,25 @@ namespace RegistrationDirectory.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ITokenService _tokenService;
-        private readonly RoleManager<AppRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
 
-        public AuthController(ITokenService tokenService, RoleManager<AppRole> roleManager, UserManager<AppUser> userManager)
+        private readonly RoleManager<AppRole> _roleManager;
+        private readonly ITokenService _tokenService;
+        public AuthController(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, ITokenService tokenService)
         {
-            _tokenService = tokenService;
-            _roleManager = roleManager;
             _userManager = userManager;
+            _roleManager = roleManager;
+            _tokenService = tokenService;
         }
-
         [HttpGet]
-        public async Task<IActionResult> GetToken(string username,string password)
+        public async Task<IActionResult> GetToken([FromBody] AuthenticateRequestModel authenticateRequestModel)
         {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user == null)
-            { 
-                return BadRequest("invalid username or password"); 
-            }
-            if (!await _userManager.CheckPasswordAsync(user,password))
+            var token = await _tokenService.CreateToken(authenticateRequestModel.Username, authenticateRequestModel.Password);
+            return Ok(new
             {
-                return BadRequest("invalid username or password");
-            }
+                AccessToken = token
+            });
 
-            return Ok(_tokenService.CreateToken(username));
-        }
-        [HttpGet("createuser")]
-        public async Task< IActionResult> CreateUser()
-        {
-            await _roleManager.CreateAsync(new() { Name = "admin" });
-            await _roleManager.CreateAsync(new() { Name = "manager" });
-            var user = new AppUser() { UserName = "test" };
-
-            await _userManager.CreateAsync(user, "Password12*");
-            await _userManager.AddToRoleAsync(user, "admin");
-            return Ok();
         }
     }
 }

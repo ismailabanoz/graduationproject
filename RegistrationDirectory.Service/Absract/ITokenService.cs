@@ -11,6 +11,6 @@ namespace RegistrationDirectory.Service.Absract
 {
     public interface ITokenService
     {
-        TokenDto CreateToken(string username);
+        Task<string> CreateToken(string userName, string password);
     }
 }
