@@ -21,6 +21,7 @@ builder.Services.AddScoped<ICommercialActivityService, CommercialActivityManager
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddScoped(typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(Watermark));
 
 builder.Services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
