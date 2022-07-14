@@ -12,40 +12,41 @@ namespace RegistrationDirectory.Service.Concrete
 {
     public class CommercialActivityManager : ICommercialActivityService
     {
-        private AppDbContext _context;
+        private readonly IRepository<CommercialActivity> _commercialActivity;
+
         private readonly IUnitOfWork _unitOfWork;
 
-        public CommercialActivityManager(AppDbContext context, IUnitOfWork unitOfWork)
+        public CommercialActivityManager( IUnitOfWork unitOfWork, IRepository<CommercialActivity> commercialActivity)
         {
-            _context = context;
             _unitOfWork = unitOfWork;
+            _commercialActivity= commercialActivity;
         }
 
         public void Create(CommercialActivity commercialActivity)
         {
-            _context.Add(commercialActivity);
+            _commercialActivity.Add(commercialActivity);
             _unitOfWork.Commit();
         }
 
         public void Delete(int commercialActivityId)
         {
-            _context.Remove(GetById(commercialActivityId));
+            _commercialActivity.Delete(commercialActivityId);
             _unitOfWork.Commit();
         }
 
         public List<CommercialActivity> GetAll()
         {
-            return _context.CommercialActivities.ToList();
+            return _commercialActivity.GetAll();
         }
 
         public CommercialActivity GetById(int commercialActivityId)
         {
-            return _context.Set<CommercialActivity>().SingleOrDefault(p => p.Id == commercialActivityId);
+            return _commercialActivity.GetById(commercialActivityId);
         }
 
         public void Update(CommercialActivity commercialActivity)
         {
-            _context.Update(commercialActivity);
+            _commercialActivity.Update(commercialActivity);
             _unitOfWork.Commit();
         }
     }

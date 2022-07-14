@@ -7,11 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.7" />
     <PackageReference Include="Ninject" Version="3.3.6" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RegistirationDirectory.SharedLibrary\RegistirationDirectory.SharedLibrary.csproj" />
     <ProjectReference Include="..\RegistrationDirectory.DataAccess\RegistrationDirectory.DataAccess.csproj" />
   </ItemGroup>
 

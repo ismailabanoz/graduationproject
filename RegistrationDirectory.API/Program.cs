@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 using RegistrationDirectory.DataAccess.Absract;
 using RegistrationDirectory.DataAccess.Concrete;
 using RegistrationDirectory.DataAccess.Models;
@@ -20,10 +21,15 @@ builder.Services.AddScoped<ICustomerService, CustomerManager>();
 builder.Services.AddScoped<ICommercialActivityService, CommercialActivityManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ITokenService, TokenService>();
-builder.Services.AddScoped(typeof(GenericRepository<>));
-builder.Services.AddScoped(typeof(Watermark));
+builder.Services.AddTransient(typeof(IRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(AppDbContext));
+builder.Services.AddSingleton(sp => new ConnectionFactory() { Uri = new Uri(builder.Configuration.GetConnectionString("RabbitMQ")),DispatchConsumersAsync=true});
+builder.Services.AddSingleton<RabbitMQClientService>();
+builder.Services.AddSingleton<RabbitMQPublisher>();
+
 
 builder.Services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

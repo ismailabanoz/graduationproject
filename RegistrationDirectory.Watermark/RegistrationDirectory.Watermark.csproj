@@ -1,32 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-RegistrationDirectory.Watermark-D7938905-0349-451A-AE7B-62DBD5D4F65C</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.7">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
     <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RegistirationDirectory.SharedLibrary\RegistirationDirectory.SharedLibrary.csproj" />
+    <ProjectReference Include="..\RegistrationDirectory.API\RegistrationDirectory.API.csproj" />
+    <ProjectReference Include="..\RegistrationDirectory.DataAccess\RegistrationDirectory.DataAccess.csproj" />
     <ProjectReference Include="..\RegistrationDirectory.Service\RegistrationDirectory.Service.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="PhotosWithWatermark\" />
-    <Folder Include="Photos\" />
-  </ItemGroup>
-
 </Project>

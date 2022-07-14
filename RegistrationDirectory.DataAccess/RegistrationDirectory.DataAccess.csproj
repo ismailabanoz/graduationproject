@@ -22,4 +22,8 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RegistirationDirectory.SharedLibrary\RegistirationDirectory.SharedLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

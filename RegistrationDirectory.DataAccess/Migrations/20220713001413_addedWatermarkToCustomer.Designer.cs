@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RegistrationDirectory.DataAccess.Concrete;
@@ -11,9 +12,10 @@ using RegistrationDirectory.DataAccess.Concrete;
 namespace RegistrationDirectory.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220713001413_addedWatermarkToCustomer")]
+    partial class addedWatermarkToCustomer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -275,6 +277,9 @@ namespace RegistrationDirectory.DataAccess.Migrations
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("Watermark")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
