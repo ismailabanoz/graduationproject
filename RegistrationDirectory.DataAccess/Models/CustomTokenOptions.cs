@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RegistrationDirectory.Service.Concrete
+namespace RegistrationDirectory.DataAccess.Models
 {
     public class CustomTokenOption
     {

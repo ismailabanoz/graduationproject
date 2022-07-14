@@ -34,10 +34,10 @@ namespace RegistrationDirectory.Service.Concrete
 
         private void CreatPicture(Customer customer)
         {
-                var imageName = customer.Id.ToString()+customer.Name+customer.Surname + ".jpg";
+                
             
             _rabbitMQPublisher.PublishForCreatePicture(new CreatePictureMessage() { CustomerId=customer.Id,Name=customer.Name,SurName=customer.Surname, BytePhoto = customer.Photograph.ToArray() });
-            _rabbitMQPublisher.PublishForWatermark(new CreatePictureWithWatermarkMessage() { CustomerId=customer.Id,ImageName=imageName });
+            _rabbitMQPublisher.PublishForWatermark(customer);
         }
 
         public void Delete(int customerId)

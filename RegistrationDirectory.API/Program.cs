@@ -44,8 +44,6 @@ builder.Services.Configure<CustomTokenOption>(builder.Configuration.GetSection("
 
 
 
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

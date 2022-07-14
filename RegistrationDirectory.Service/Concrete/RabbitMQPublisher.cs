@@ -27,10 +27,10 @@ namespace RegistrationDirectory.Service.Concrete
             properties.Persistent = true;
             channel.BasicPublish(exchange: RabbitMQClientService.ExcangeName, routingKey: RabbitMQClientService.RoutingNameForPicture, basicProperties: properties, body: bodyByte);
         }
-        public void PublishForWatermark(CreatePictureWithWatermarkMessage createPictureWithWatermarkMessage)
+        public void PublishForWatermark(Customer customer)
         {
             var channel = _rabbitMQClientService.ConnectForWatermark();
-            var bodyString = JsonSerializer.Serialize(createPictureWithWatermarkMessage);
+            var bodyString = JsonSerializer.Serialize(customer);
             var bodyByte = Encoding.UTF8.GetBytes(bodyString);
             var properties = channel.CreateBasicProperties();
             properties.Persistent = true;

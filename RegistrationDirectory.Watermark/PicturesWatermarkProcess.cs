@@ -15,18 +15,18 @@ using System.Threading.Tasks;
 
 namespace RegistrationDirectory.Watermark
 {
-    internal class PicturesWatermarkProcess:BackgroundService
+    
+    public class PicturesWatermarkProcess:BackgroundService
     {
         private readonly ILogger<PicturesWatermarkProcess> _logger;
         private readonly RabbitMQClientService _rabbitmqClientService;
         private IModel _channel;
-        private readonly ICustomerService _customerService;
-
-        public PicturesWatermarkProcess(ILogger<PicturesWatermarkProcess> logger, RabbitMQClientService rabbitmqClientService, ICustomerService customerService)
+        private IServiceProvider _serviceProvider;
+        public PicturesWatermarkProcess(ILogger<PicturesWatermarkProcess> logger, RabbitMQClientService rabbitmqClientService, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _rabbitmqClientService = rabbitmqClientService;
-            _customerService = customerService;
+            _serviceProvider = serviceProvider;
         }
         public override Task StartAsync(CancellationToken cancellationToken)
         {
@@ -38,7 +38,7 @@ namespace RegistrationDirectory.Watermark
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(2000, stoppingToken);
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 var consumer = new AsyncEventingBasicConsumer(_channel);
                 _channel.BasicConsume(RabbitMQClientService.QueueNameForWatermark, false, consumer);
@@ -48,29 +48,24 @@ namespace RegistrationDirectory.Watermark
             
         }
 
-        private Task AddWatermark(object sender, BasicDeliverEventArgs @event)
+        private async Task<Task> AddWatermark(object sender, BasicDeliverEventArgs @event)
         {
             
             try
             {
-                var picturesWatermarkProcess = JsonSerializer.Deserialize<CreatePictureWithWatermarkMessage>(Encoding.UTF8.GetString(@event.Body.ToArray()));
+                var customer = JsonSerializer.Deserialize<Customer>(Encoding.UTF8.GetString(@event.Body.ToArray()));
                 var siteName = "www.mysite.com";
                 var photos = Path.GetFullPath(@"..\RegistrationDirectory.API\photos");
-                 var path=   Path.Combine(photos, picturesWatermarkProcess.ImageName);
+                var imageName = customer.Id.ToString() + customer.Name + customer.Surname + ".jpg";
+                var path=   Path.Combine(photos, imageName);
                 using var img = Image.FromFile(path);
                 using var graphic = Graphics.FromImage(img);
                 var font = new Font(FontFamily.GenericMonospace, 40, FontStyle.Bold, GraphicsUnit.Pixel);
-
                 var textSize = graphic.MeasureString(siteName, font);
-
                 var color = Color.FromArgb(255, 255, 0, 0);
                 var brush = new SolidBrush(color);
-
                 var position = new Point(img.Width - ((int)textSize.Width + 30), img.Height - ((int)textSize.Height + 30));
-
-
                 graphic.DrawString(siteName, font, brush, position);
-                img.Save(@"..\RegistrationDirectory.API\PhotosWithWatermark\" + picturesWatermarkProcess.ImageName + "(with watermark).jpg");
                 
                 
                 byte[] imageBytes;
@@ -79,11 +74,24 @@ namespace RegistrationDirectory.Watermark
                     img.Save(memoryStream, img.RawFormat);
                     imageBytes = memoryStream.ToArray();
                 }
-                /*_customerService.Update(new Customer
+
+
+                using (var scope= _serviceProvider.CreateScope())
                 {
-                    Id = picturesWatermarkProcess.CustomerId,
-                    Photograph = imageBytes
-                });*/
+                    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    context.Customers.Update(new Customer
+                    {
+                        Id = customer.Id,
+                        Name = customer.Name,
+                        Surname= customer.Surname,
+                        Email= customer.Email,
+                        Phone= customer.Phone,
+                        City= customer.City,
+                        Photograph = imageBytes
+                    });
+                    context.SaveChanges();
+                }
+                img.Save(@"..\RegistrationDirectory.API\PhotosWithWatermark\" + imageName + "(with watermark).jpg");
                 img.Dispose();
                 graphic.Dispose();
                 _channel.BasicAck(@event.DeliveryTag, false);

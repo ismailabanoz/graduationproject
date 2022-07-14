@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace RegistrationDirectory.Watermark
 {
-    internal class CreatePictureProcess :BackgroundService
+    public class CreatePictureProcess :BackgroundService
     {
         private readonly ILogger<PicturesWatermarkProcess> _logger;
         private readonly RabbitMQClientService _rabbitmqClientService;
