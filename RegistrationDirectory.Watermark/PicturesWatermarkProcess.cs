@@ -38,7 +38,7 @@ namespace RegistrationDirectory.Watermark
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.UtcNow);
                 var consumer = new AsyncEventingBasicConsumer(_channel);
                 _channel.BasicConsume(RabbitMQClientService.QueueNameForWatermark, false, consumer);
                 consumer.Received += AddWatermark;

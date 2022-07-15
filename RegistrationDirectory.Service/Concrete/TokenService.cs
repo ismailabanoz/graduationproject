@@ -42,8 +42,8 @@ namespace RegistrationDirectory.Service.Concrete
                 return "incorrect username or password";
             }
             var userRoles = await _userManager.GetRolesAsync(user);
-            var accessTokenExpiration = DateTime.Now.AddMinutes(_customTokenOption.AccessTokenExpiration);
-            var refreshTokenExpiration = DateTime.Now.AddMinutes(_customTokenOption.RefreshTokenExpiration);
+            var accessTokenExpiration = DateTime.UtcNow.AddMinutes(_customTokenOption.AccessTokenExpiration);
+            var refreshTokenExpiration = DateTime.UtcNow.AddMinutes(_customTokenOption.RefreshTokenExpiration);
             var audience = (_customTokenOption.Audience[0]);
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_customTokenOption.SecurityKey));
             SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
@@ -72,7 +72,7 @@ namespace RegistrationDirectory.Service.Concrete
           var checkRefreshToken = _appDbContext.RefreshTokens.Find(appUser.UserName);
           if (checkRefreshToken == null)
           {
-              _appDbContext.RefreshTokens.Add(new RefreshTokenModel { UserName = appUser.UserName, Guid = refreshToken, ExpDate = DateTime.Now.AddDays(60) });
+              _appDbContext.RefreshTokens.Add(new RefreshTokenModel { UserName = appUser.UserName, Guid = refreshToken, ExpDate = DateTime.UtcNow.AddDays(60) });
           }
           else
           {
