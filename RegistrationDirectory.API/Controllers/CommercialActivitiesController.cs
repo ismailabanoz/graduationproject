@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RegistrationDirectory.DataAccess.Models;
 using RegistrationDirectory.Service.Absract;
+using RegistrationDirectory.Service.Concrete;
 
 namespace RegistrationDirectory.API.Controllers
 {
@@ -25,6 +26,7 @@ namespace RegistrationDirectory.API.Controllers
         public IActionResult Add(CommercialActivity commercialActivity)
         {
             _commercialActivityService.Create(commercialActivity);
+            
             return Ok(commercialActivity);
         }
     }

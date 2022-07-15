@@ -11,6 +11,8 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
 
         IConfiguration Configuration = context.Configuration;
+
+
         services.AddDbContext<AppDbContext>(options =>
         {
             options.UseNpgsql(Configuration.GetConnectionString("SqlCon"));

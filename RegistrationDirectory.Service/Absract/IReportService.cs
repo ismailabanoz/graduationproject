@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace RegistrationDirectory.Service.Absract
 {
-    public interface IWeeklyReportService
+    public interface IReportService
     {
+        void CreateExcelForWeeklyReport();
+        void CreateExcelForMonthlyReport();
     }
 }

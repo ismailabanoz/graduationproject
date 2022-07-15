@@ -15,6 +15,6 @@ namespace RegistrationDirectory.DataAccess.Models
         public int CustomerId { get; set; }
         public string Service { get; set; }
         public decimal Price { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
     }
 }

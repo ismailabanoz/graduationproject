@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
+using Quartz.Impl;
+using Quartz.Spi;
 using RabbitMQ.Client;
 using RegistrationDirectory.DataAccess.Absract;
 using RegistrationDirectory.DataAccess.Concrete;
@@ -18,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ICustomerService, CustomerManager>();
+builder.Services.AddScoped<IReportService, ReportManager>();
 builder.Services.AddScoped<ICommercialActivityService, CommercialActivityManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ITokenService, TokenService>();
@@ -26,6 +30,17 @@ builder.Services.AddScoped(typeof(AppDbContext));
 builder.Services.AddSingleton(sp => new ConnectionFactory() { Uri = new Uri(builder.Configuration.GetConnectionString("RabbitMQ")),DispatchConsumersAsync=true});
 builder.Services.AddSingleton<RabbitMQClientService>();
 builder.Services.AddSingleton<RabbitMQPublisher>();
+builder.Services.AddScoped<ReportManager>();
+
+
+builder.Services.AddHostedService<QuartzHostedService>();
+builder.Services.AddSingleton<IJobFactory,SingletonJobFactory>();
+builder.Services.AddSingleton<ISchedulerFactory,StdSchedulerFactory>();
+builder.Services.AddSingleton<JobReminders>();
+builder.Services.AddSingleton<SecondJobReminder>();
+builder.Services.AddSingleton(new MyJobWeekly(type:typeof(JobReminders),expression: "0 0 0 ? * SUN *"));//every 5 second 0 / 5 0 / 1 * 1 / 1 * ? * - every week 0 0 0 ? * SUN *
+builder.Services.AddSingleton(new MyJobMonthly(type:typeof(SecondJobReminder),expression: "0 0 0 1 * ? *"));//every 15 second 0 / 15 0 / 1 * 1 / 1 * ? * - every month 0 0 0 1 * ? *
+
 
 
 builder.Services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
