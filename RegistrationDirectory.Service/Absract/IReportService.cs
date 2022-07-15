@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MailKit.Net.Smtp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,6 @@ namespace RegistrationDirectory.Service.Absract
     {
         void CreateExcelForWeeklyReport();
         void CreateExcelForMonthlyReport();
+        void SenMail(string path, string period);
     }
 }

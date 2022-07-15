@@ -1,5 +1,11 @@
 ﻿using ClosedXML.Excel;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using MimeKit;
+using MimeKit.Text;
 using RegistrationDirectory.DataAccess.Concrete;
 using RegistrationDirectory.DataAccess.Models;
 using RegistrationDirectory.Service.Absract;
@@ -16,11 +22,13 @@ namespace RegistrationDirectory.Service.Concrete
     {
         private readonly ICommercialActivityService _commercialActivityService;
         private readonly ICustomerService _customerService;
+        private readonly AppDbContext _appDbContext;
 
-        public ReportManager(ICommercialActivityService commercialActivityService, ICustomerService customerService)
+        public ReportManager(ICommercialActivityService commercialActivityService, ICustomerService customerService, AppDbContext appDbContext)
         {
             _commercialActivityService = commercialActivityService;
             _customerService = customerService;
+            _appDbContext = appDbContext;
         }
         public void CreateExcelForMonthlyReport()
         {
@@ -31,11 +39,36 @@ namespace RegistrationDirectory.Service.Concrete
             ds.Tables.Add(table);
             var rnd = Guid.NewGuid().ToString();
             string now = DateTime.Today.ToShortDateString().ToString();
-            string filePath = string.Format(@$"..\RegistrationDirectory.API\Excel\Monthly Report_{now}.xlsx");
+            string path = @$"..\RegistrationDirectory.API\Excel\Monthly Report_{now}.xlsx";
+            string filePath = string.Format(path);
             wb.Worksheets.Add(ds);
             wb.SaveAs(filePath);
-
+            SenMail(path,"Monthly Report");
         }
+
+        public void SenMail(string path,string period)
+        {
+            var email = new MimeMessage();
+            var users = _appDbContext.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).ToList();
+            users.ForEach(x =>
+            {
+                email.To.Add(MailboxAddress.Parse(x.Email));
+
+            });
+            email.From.Add(MailboxAddress.Parse("ismailabanoz1213@gmail.com"));
+            email.Subject = period;
+            email.Body = new TextPart(TextFormat.Html) { Text = "<h1>Example HTML Message Body</h1>" };
+            var builder = new BodyBuilder();
+            builder.TextBody = @$"The {period} is attached.";
+            builder.Attachments.Add(path);
+            email.Body = builder.ToMessageBody();
+            var smtp = new SmtpClient();
+            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate("ismailabanoz1213@gmail.com", "The application password created from google will come here"); // The application password created from google will come here
+            smtp.Send(email);
+            smtp.Disconnect(true);
+        }
+
         public void CreateExcelForWeeklyReport()
         {
             var table=GetWeeklyReport();
@@ -45,51 +78,11 @@ namespace RegistrationDirectory.Service.Concrete
             ds.Tables.Add(table);
             var rnd = Guid.NewGuid().ToString();
             string now= DateTime.Today.ToShortDateString().ToString();
-            string filePath = string.Format(@$"..\RegistrationDirectory.API\Excel\Weekly Report_{now}.xlsx");
+            string path = @$"..\RegistrationDirectory.API\Excel\Weekly Report_{now}.xlsx";
+            string filePath = string.Format(path);
             wb.Worksheets.Add(ds);
             wb.SaveAs(filePath);
-
-
-
-            //List<Customer> customer4 = _customerService.GetAll();
-           // List<CommercialActivity> customerActivity = _commercialActivityService.GetAll();
-
-
-            /*var q = (from pd in customer4
-                     join od in customerActivity on pd.Id equals od.CustomerId
-                     orderby od.CustomerId descending
-                     select new
-                     {
-                         pd.Id,
-                         pd.Name,
-                         pd.Surname,
-                         pd.Phone,
-                         od.Price
-                     }).ToList();*/
-
-
-           /* var at=from ca in customerActivity
-                   join c in customer4 on ca.Id equals c.Id into g
-                   orderby g.Count() descending, ca.CustomerId
-                   select new
-                   {
-                       Id=ca.CustomerId,
-                       Name=ca.
-                   }
-           */
-
-
-                   
-
-
-
-
-
-            /*weeklyReportModels2 =
-                 weeklyReportModels2.GroupBy(row => row.TotalNumberOfCommercialActivities)
-                     .SelectMany(g => g.OrderBy(row => row.TotalNumberOfCommercialActivities).Take(5))
-                     .ToList();*/
-
+            SenMail(path,"Weekly Report");
         }
         public DataTable GetMonthlyReport()
         {
@@ -156,29 +149,6 @@ namespace RegistrationDirectory.Service.Concrete
                 table.Rows.Add(x.CustomerName, x.CustomerSurname, x.Phone, x.TotalNumberOfCommercialActivities, x.TotalPrice);
             });
             return table;
-            /*var weeklyReportModels =  _commercialActivityService.GetAll();
-            List<WeeklyReportModel> weeklyReportModels2= new List<WeeklyReportModel>();
-            var count =  from c in weeklyReportModels
-                        group c by c.CustomerId into g
-                        select new { CustomerId = g.Key, CustomerCount = g.Count() };
-
-            DataTable table = new DataTable { TableName = "testt" };
-
-            table.Columns.Add("CustomerId", typeof(int));
-            table.Columns.Add("TotalNumberOfCommercialActivities", typeof(int));
-
-            weeklyReportModels2.ForEach(x =>
-            {
-                table.Rows.Add(x.TotalPrice, x.TotalNumberOfCommercialActivities);
-            });
-            return table;*/
-
-
-
-
-            //foreach (var item in weeklyReportModels.GroupBy(x => x.CustomerId).Select(group => new {weeklyReportModels2.Capacity=group.Key,weeklyReportModels2.Count= group.Count() }) ;
-            // select COUNT(CustomerId),CustomerId from CommercialActivities group by CustomerId having COUNT(CustomerId) > 1
-
         }
     }
 }

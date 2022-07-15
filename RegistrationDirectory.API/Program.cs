@@ -41,8 +41,8 @@ builder.Services.AddSingleton<IJobFactory,SingletonJobFactory>();
 builder.Services.AddSingleton<ISchedulerFactory,StdSchedulerFactory>();
 builder.Services.AddSingleton<JobReminders>();
 builder.Services.AddSingleton<SecondJobReminder>();
-builder.Services.AddSingleton(new MyJobWeekly(type:typeof(JobReminders),expression: "0 0 0 ? * SUN *"));//every 5 second 0 / 5 0 / 1 * 1 / 1 * ? * - every week 0 0 0 ? * SUN *
-builder.Services.AddSingleton(new MyJobMonthly(type:typeof(SecondJobReminder),expression: "0 0 0 1 * ? *"));//every 15 second 0 / 15 0 / 1 * 1 / 1 * ? * - every month 0 0 0 1 * ? *
+builder.Services.AddSingleton(new MyJobWeekly(type:typeof(JobReminders),expression: "0 0 0 ? * SUN *"));//every 5 second 0/5 0/1 * 1/1 * ? * - every week 0 0 0 ? * SUN *
+builder.Services.AddSingleton(new MyJobMonthly(type:typeof(SecondJobReminder),expression: "0 0 0 1 * ? *"));//every 15 second 0/15 0/1 * 1/1 * ? * - every month 0 0 0 1 * ? *
 
 
 builder.Services.Configure<CustomTokenOption>(builder.Configuration.GetSection("TokenOption"));

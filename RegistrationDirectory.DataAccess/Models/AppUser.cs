@@ -10,5 +10,6 @@ namespace RegistrationDirectory.DataAccess.Models
 {
     public class AppUser : IdentityUser
     {
+        public ICollection<AppUserRole> UserRoles { get; set; }
     }
 }
