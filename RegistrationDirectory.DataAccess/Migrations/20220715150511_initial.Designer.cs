@@ -12,14 +12,14 @@ using RegistrationDirectory.DataAccess.Concrete;
 namespace RegistrationDirectory.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220710231143_initial")]
+    [Migration("20220715150511_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.6")
+                .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -231,7 +231,7 @@ namespace RegistrationDirectory.DataAccess.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime?>("Date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("Price")
@@ -281,6 +281,23 @@ namespace RegistrationDirectory.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("RegistrationDirectory.DataAccess.Models.RefreshToken", b =>
+                {
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserName");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

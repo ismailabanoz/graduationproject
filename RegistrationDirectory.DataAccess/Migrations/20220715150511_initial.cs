@@ -58,7 +58,7 @@ namespace RegistrationDirectory.DataAccess.Migrations
                     CustomerId = table.Column<int>(type: "integer", nullable: false),
                     Service = table.Column<string>(type: "text", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -81,6 +81,19 @@ namespace RegistrationDirectory.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    UserName = table.Column<string>(type: "text", nullable: false),
+                    Guid = table.Column<string>(type: "text", nullable: false),
+                    ExpDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.UserName);
                 });
 
             migrationBuilder.CreateTable(
@@ -249,6 +262,9 @@ namespace RegistrationDirectory.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

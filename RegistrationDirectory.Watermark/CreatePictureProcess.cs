@@ -32,11 +32,11 @@ namespace RegistrationDirectory.Watermark
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(1000, stoppingToken);
                 var consumer = new AsyncEventingBasicConsumer(_channel);
                 _channel.BasicConsume(RabbitMQClientService.QueueNameForPicture, false, consumer);
                 consumer.Received += CreatePicture;
                 Task.CompletedTask.Wait();
+                await Task.Delay(1000*60*30, stoppingToken);
             }
             
         }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RegistrationDirectory.DataAccess.Models
 {
-    public class RefreshToken
+    public class RefreshTokenModel
     {
         [Key]
         public string UserName { get; set; }

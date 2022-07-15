@@ -38,12 +38,12 @@ namespace RegistrationDirectory.Watermark
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(2000, stoppingToken);
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 var consumer = new AsyncEventingBasicConsumer(_channel);
                 _channel.BasicConsume(RabbitMQClientService.QueueNameForWatermark, false, consumer);
                 consumer.Received += AddWatermark;
                 Task.CompletedTask.Wait();
+                await Task.Delay(1000*60*60, stoppingToken);
             }
             
         }

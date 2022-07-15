@@ -11,15 +11,12 @@ namespace RegistrationDirectory.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<AppRole> _roleManager;
         private readonly ITokenService _tokenService;
-        public AuthController(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, ITokenService tokenService)
+        public AuthController(ITokenService tokenService)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
             _tokenService = tokenService;
         }
+        
         [HttpGet]
         public async Task<IActionResult> GetToken([FromBody] AuthenticateRequestModel authenticateRequestModel)
         {
@@ -28,7 +25,6 @@ namespace RegistrationDirectory.API.Controllers
             {
                 AccessToken = token
             });
-
         }
     }
 }

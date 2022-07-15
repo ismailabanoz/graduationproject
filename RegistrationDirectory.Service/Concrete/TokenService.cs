@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RegistrationDirectory.DataAccess.Absract;
 using RegistrationDirectory.DataAccess.Concrete;
-using RegistrationDirectory.DataAccess.DTOs;
 using RegistrationDirectory.DataAccess.Models;
 using RegistrationDirectory.Service.Absract;
 using System;
@@ -31,8 +30,8 @@ namespace RegistrationDirectory.Service.Concrete
             _customTokenOption = customTokenOption.Value;
         }
 
-        public async Task<string> CreateToken(string userName,string password)
-         {
+        public async Task<string> CreateToken(string userName, string password)
+        {
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
@@ -45,10 +44,12 @@ namespace RegistrationDirectory.Service.Concrete
             var userRoles = await _userManager.GetRolesAsync(user);
             var accessTokenExpiration = DateTime.Now.AddMinutes(_customTokenOption.AccessTokenExpiration);
             var refreshTokenExpiration = DateTime.Now.AddMinutes(_customTokenOption.RefreshTokenExpiration);
+            var audience = (_customTokenOption.Audience[0]);
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_customTokenOption.SecurityKey));
             SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Aud, audience));
             userRoles.ToList().ForEach(x =>
             {
                 claims.Add(new Claim(ClaimTypes.Role, x));
@@ -71,7 +72,7 @@ namespace RegistrationDirectory.Service.Concrete
           var checkRefreshToken = _appDbContext.RefreshTokens.Find(appUser.UserName);
           if (checkRefreshToken == null)
           {
-              _appDbContext.RefreshTokens.Add(new RefreshToken { UserName = appUser.UserName, Guid = refreshToken, ExpDate = DateTime.Now.AddDays(60) });
+              _appDbContext.RefreshTokens.Add(new RefreshTokenModel { UserName = appUser.UserName, Guid = refreshToken, ExpDate = DateTime.Now.AddDays(60) });
           }
           else
           {
