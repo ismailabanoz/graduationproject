@@ -123,6 +123,7 @@ Monitoring and reporting of commercial activity information of customers and cus
 | :-------- | :------- | :------------------------- |
 | `id` | `int` | **Required**. your id |
 
+#### GET Customer
 ```http
   GET /api/customer/${id}
 ```
