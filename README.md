@@ -9,11 +9,6 @@ Monitoring and reporting of commercial activity information of customers and cus
 **Server:** C#, Entityframework Core, PostgreSQL, JSON Web Token, Asp.Net Core API, Docker,  RabbitMQ, Quartz, ClosedXML, MailKit
 
 
-## Authors
-
-- [@ismailabanoz](https://github.com/ismailabanoz)
-
-
 ## API Reference
 
 #### Create Token
@@ -131,3 +126,7 @@ Monitoring and reporting of commercial activity information of customers and cus
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `id`      | `int` | **Required**. Id of customer to fetch |
+
+## Authors
+
+- [@ismailabanoz](https://github.com/ismailabanoz)
